@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Cloth Match Program</title>
+<script src="./src/jquery-2.0.2.min.js"></script>
+</head>
+<script>
+$(document).ready(function(){
+	//$("#btn").click(function(){
+		//var cityName = $("#cityName").val();
+		var cityName = "Seoul";
+		$.ajax({
+			url:'http://api.openweathermap.org/data/2.5/weather?q='+cityName+'&appid=17bd12a310132d92987557aa15125e9e',
+			dataType:'json',
+			type: 'GET',
+			success: function(data){
+				console.log(data);
+				console.log("현재온도 : "+(data.main.temp- 273.15));
+				console.log("현재습도 : "+data.main.humidity);
+				console.log("날씨 : "+data.weather[0].main);
+				console.log("상세 날씨 설명 : "+data.weather[0].description);
+				console.log("도시이름 : "+data.name);
+				console.log("구름 : "+(data.clouds.all)+"%" );
+				
+				var imgURL="http://openweathermap.org/img/w/"+data.weather[0].icon+".png"
+				
+				$("#img").attr("src", imgURL);
+				$("#name").html(data.name);
+				
+				var dt = new Date();
+				var date = dt.getDate() +"/"+ (dt.getMonth()+1) +"/"+ dt.getFullYear();
+				var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
+				
+				$("#date").html(date+" "+time);
+				console.log("time : "+time);
+				console.log("date : "+date);
+				
+				var temper = Math.round((data.main.temp- 273.15));
+				$("#temperature").html(temper);
+			},
+			error:function(jqHXR, textStatus, errorThrown){
+				alert("Error: "+textStatus+" : "+errorThrown);
+			}
+	
+		});
+		
+	//});
+});
+</script>
+<style>
+#square_box {
+  
+  border-radius: 15px;
+  background: white;
+  border-color:grey;
+  border-style: solid;
+  border-width: 1.5px;
+  padding: 20px; 
+  width: 598px;
+  height: 420px; 
+} 
+
+#name {
+	font-size : 50px;
+}
+
+#date {
+	font-size : 25px;
+}
+
+#img, #temperature {
+	
+	display: block;
+	float: left;
+}
+
+#temperature {
+	font-size: 50px;
+}
+
+hr {
+  border:none;
+  border-top:1px dotted #8D8989;
+  color:#8D8989;
+  background-color: white;
+  height:1px;
+ 
+}
+</style>
+<body>
+
+<div id="test" align="center">
+	<input type="text" id="cityName"> &nbsp; <button id="btn">검색</button>
+	<div id="square_box" align="left"> 
+		<a id="name" ></a> <br/>
+		<a id="date"> </a><a id="time"></a> <br/>
+		<img src="" id="img" width="70" height="70"> 
+		<a id="temperature"> </a> <div><a id="celsius">ºC </a>|<a id="farhe"> ºF </a></div><br/><br/><br/><br/> 
+		 <hr>
+	</div>
+
+ 
+</div>
+</body>
+</html>
