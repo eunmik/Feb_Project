@@ -2,21 +2,22 @@
 <html>
 <head>
 <meta charset="EUC-KR">
-<title>Cloth Match Program</title>
+<title>Clothe Match Program</title>
 <script src="./src/jquery-2.0.2.min.js"></script>
 </head>
 <script>
 $(document).ready(function(){
-	//$("#btn").click(function(){
-		//var cityName = $("#cityName").val();
-		var cityName = "Seoul";
+	$("#btn").click(function(){
+		var cityName = $("#cityName").val();
+		//var cityName = "Seoul";
 		$.ajax({
 			url:'http://api.openweathermap.org/data/2.5/weather?q='+cityName+'&appid=17bd12a310132d92987557aa15125e9e',
 			dataType:'json',
 			type: 'GET',
 			success: function(data){
+				var temp = data.main.temp- 273.15;
 				console.log(data);
-				console.log("현재온도 : "+(data.main.temp- 273.15));
+				console.log("현재온도 : "+temp);
 				console.log("현재습도 : "+data.main.humidity);
 				console.log("날씨 : "+data.weather[0].main);
 				console.log("상세 날씨 설명 : "+data.weather[0].description);
@@ -36,8 +37,10 @@ $(document).ready(function(){
 				console.log("time : "+time);
 				console.log("date : "+date);
 				
-				var temper = Math.round((data.main.temp- 273.15));
+				var temper = Math.round(temp);
 				$("#temperature").html(temper);
+				
+				callAjax(temper);
 			},
 			error:function(jqHXR, textStatus, errorThrown){
 				alert("Error: "+textStatus+" : "+errorThrown);
@@ -45,8 +48,38 @@ $(document).ready(function(){
 	
 		});
 		
-	//});
+	});
+
+	
+	
 });
+
+function callAjax(temp){
+	
+	$.ajax({
+		url:'MainServlet',
+		dataType:'json',
+		data: "temp="+temp,
+		type: 'GET',
+		success: function(data){
+			console.log(data);
+			console.log(data.clothes.length);
+			$("#second_part").html("");
+			for (var i=0; i<data.clothes.length; i++) {
+				$("#second_part").append('<img src=./icons/'+data.clothes[i]+'.png width="70" height="70"><a>'+data.clothes[i]+'</a>');
+			
+				console.log(data.clothes[i]);
+			}
+			
+			 
+		},
+		error:function(jqHXR, textStatus, errorThrown){
+			alert("Error: "+textStatus+" : "+errorThrown);
+		}
+		});
+	
+	
+}
 </script>
 <style>
 #square_box {
@@ -87,20 +120,29 @@ hr {
   height:1px;
  
 }
+
+#square_box {
+	margin-top:10px;
+}
 </style>
 <body>
 
 <div id="test" align="center">
-	<input type="text" id="cityName"> &nbsp; <button id="btn">검색</button>
-	<div id="square_box" align="left"> 
-		<a id="name" ></a> <br/>
-		<a id="date"> </a><a id="time"></a> <br/>
-		<img src="" id="img" width="70" height="70"> 
-		<a id="temperature"> </a> <div><a id="celsius">ºC </a>|<a id="farhe"> ºF </a></div><br/><br/><br/><br/> 
-		 <hr>
+	<input type="text" id="cityName"> &nbsp; <button id="btn">검색</button><br/>
+	
+	<div id="square_box" align="left">
+		<div id="first_part"> 
+			<a id="name" ></a> <br/>
+			<a id="date"> </a><a id="time"></a> <br/>
+			<img src="" id="img" width="70" height="70"> 
+			<a id="temperature"> </a> <div><a id="celsius">ºC </a>|<a id="farhe"> ºF </a></div><br/><br/><br/><br/> 
+			<hr>
+		</div>
+		<div id="second_part">
+			
+		</div>
 	</div>
-
- 
 </div>
+
 </body>
 </html>
